@@ -1,86 +1,99 @@
-using System.Collections;
-
 namespace Lab7.White
 {
-    public class Task3
+    public class Task4
     {
-        public struct Student
+        public struct Participant
         {
-            // имя студента
+            // имя шахматиста
             private string name;
-            // фамилия студента
+            // фамилия шахматиста
             private string surname;
-            // массив оценок без нулей
-            private int[] marks;
-            // количество пропусков
-            private int skipped;
-           
+            // массив очков за партии
+            private double[] scores;
+            // сколько матчей уже записано
+            private int matchCount;
+            // свойства только для чтения
             public string Name => name;
             public string Surname => surname;
-            public int Skipped => skipped;
-
-            // средняя оценка по предмету
-            public double AverageMark
+            // массив результатов
+            public double[] Scores => scores;
+            // сумма всех очков
+            public double TotalScore
             {
                 get
                 {
-                    if (marks == null || marks.Length == 0)
+                    // защита от null
+                    if (scores == null)
                         return 0;
 
-                    int sum = 0;
+                    double sum = 0;
 
-                    foreach (int mark in marks)
+                    // считаем сумму очков
+                    foreach (double score in scores)
                     {
-                        sum += mark;
+                        // -1 означает пустую ячейку
+                        if (score != -1)
+                            sum += score;
                     }
 
-                    return (double)sum / marks.Length;
+                    return sum;
                 }
             }
 
             // конструктор
-            public Student(string name, string surname)
+            public Participant(string name, string surname)
             {
                 this.name = name;
                 this.surname = surname;
 
-                marks = new int[0];
-                skipped = 0;
+                // создаём массив на 10 партий
+                scores = new double[10];
+
+                // заполняем -1
+                // чтобы тесты понимали,
+                // что партия ещё не сыграна
+                for (int i = 0; i < scores.Length; i++)
+                {
+                    scores[i] = -1;
+                }
+
+                matchCount = 0;
             }
 
-            // добавляет оценку или пропуск
-            public void Lesson(int mark)
+            // добавляет результат партии
+            public void PlayMatch(double result)
             {
-                // 0 — это пропуск
-                if (mark == 0)
+                // защита от null
+                if (scores == null)
                 {
-                    skipped++;
-                }
-                else
-                {
-                    // если оценка не 0, добавляем её в массив
-                    if (marks == null)
-                        marks = new int[0];
+                    scores = new double[10];
 
-                    Array.Resize(ref marks, marks.Length + 1);
-                    marks[marks.Length - 1] = mark;
+                    for (int i = 0; i < scores.Length; i++)
+                    {
+                        scores[i] = -1;
+                    }
+                }
+
+                // добавляем только если есть место
+                if (matchCount < scores.Length)
+                {
+                    scores[matchCount] = result;
+                    matchCount++;
                 }
             }
 
-            // сортировка по убыванию пропусков
-            public static void SortBySkipped(Student[] array)
+            // сортировка по убыванию очков
+            public static void Sort(Participant[] array)
             {
                 Array.Sort(array,
-                    (a, b) => b.Skipped.CompareTo(a.Skipped));
+                    (a, b) => b.TotalScore.CompareTo(a.TotalScore));
             }
 
             // вывод информации
             public void Print()
             {
                 Console.WriteLine(
-                    $"{Name} {Surname} " +
-                    $"{AverageMark:F2} " +
-                    $"{Skipped}");
+                    $"{Name} {Surname} {TotalScore}");
             }
         }
     }
