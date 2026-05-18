@@ -1,99 +1,75 @@
 namespace Lab7.White
 {
-    public class Task4
+    public class Task3
     {
-        public struct Participant
+        public struct Student
         {
-            // имя шахматиста
             private string name;
-            // фамилия шахматиста
             private string surname;
-            // массив очков за партии
-            private double[] scores;
-            // сколько матчей уже записано
-            private int matchCount;
-            // свойства только для чтения
+            private int[] marks;
+            private int skipped;
+            private int markCount;
+
             public string Name => name;
             public string Surname => surname;
-            // массив результатов
-            public double[] Scores => scores;
-            // сумма всех очков
-            public double TotalScore
+            public int Skipped => skipped;
+
+            public double AverageMark
             {
                 get
                 {
-                    // защита от null
-                    if (scores == null)
+                    if (marks == null || markCount == 0)
                         return 0;
 
-                    double sum = 0;
+                    int sum = 0;
 
-                    // считаем сумму очков
-                    foreach (double score in scores)
+                    for (int i = 0; i < markCount; i++)
                     {
-                        // -1 означает пустую ячейку
-                        if (score != -1)
-                            sum += score;
+                        sum += marks[i];
                     }
 
-                    return sum;
+                    return (double)sum / markCount;
                 }
             }
 
-            // конструктор
-            public Participant(string name, string surname)
+            public Student(string name, string surname)
             {
                 this.name = name;
                 this.surname = surname;
 
-                // создаём массив на 10 партий
-                scores = new double[10];
-
-                // заполняем -1
-                // чтобы тесты понимали,
-                // что партия ещё не сыграна
-                for (int i = 0; i < scores.Length; i++)
-                {
-                    scores[i] = -1;
-                }
-
-                matchCount = 0;
+                marks = new int[10];
+                skipped = 0;
+                markCount = 0;
             }
 
-            // добавляет результат партии
-            public void PlayMatch(double result)
+            public void Lesson(int mark)
             {
-                // защита от null
-                if (scores == null)
+                if (mark == 0)
                 {
-                    scores = new double[10];
+                    skipped++;
+                }
+                else
+                {
+                    if (marks == null)
+                        marks = new int[10];
 
-                    for (int i = 0; i < scores.Length; i++)
+                    if (markCount < marks.Length)
                     {
-                        scores[i] = -1;
+                        marks[markCount] = mark;
+                        markCount++;
                     }
                 }
-
-                // добавляем только если есть место
-                if (matchCount < scores.Length)
-                {
-                    scores[matchCount] = result;
-                    matchCount++;
-                }
             }
 
-            // сортировка по убыванию очков
-            public static void Sort(Participant[] array)
+            public static void SortBySkipped(Student[] array)
             {
                 Array.Sort(array,
-                    (a, b) => b.TotalScore.CompareTo(a.TotalScore));
+                    (a, b) => b.Skipped.CompareTo(a.Skipped));
             }
 
-            // вывод информации
             public void Print()
             {
-                Console.WriteLine(
-                    $"{Name} {Surname} {TotalScore}");
+                Console.WriteLine($"{Name} {Surname} {AverageMark:F2} {Skipped}");
             }
         }
     }
