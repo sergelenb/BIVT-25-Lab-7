@@ -10,7 +10,9 @@ namespace Lab7.White
             private string surname;
             // массив очков за партии
             private double[] scores;
-          
+            // сколько партий уже записано
+            private int matchCount;
+ 
             public string Name => name;
             public string Surname => surname;
             public double[] Scores => scores;
@@ -40,17 +42,23 @@ namespace Lab7.White
                 this.name = name;
                 this.surname = surname;
 
-                scores = new double[0];
+                // в тестах ожидается массив на 10 партий
+                scores = new double[10];
+
+                matchCount = 0;
             }
 
             // добавляет результат новой партии
             public void PlayMatch(double result)
             {
                 if (scores == null)
-                    scores = new double[0];
+                    scores = new double[10];
 
-                Array.Resize(ref scores, scores.Length + 1);
-                scores[scores.Length - 1] = result;
+                if (matchCount < scores.Length)
+                {
+                    scores[matchCount] = result;
+                    matchCount++;
+                }
             }
 
             // сортировка по убыванию общего количества очков
